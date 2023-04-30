@@ -1,0 +1,58 @@
+.vocab--tooltip {
+  position: absolute;
+  z-index: 1000;
+  background-color: #409e7b;
+  border-radius: 4px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  width: 250px;
+}
+
+.vocab--tooltip .loader {
+  width: 16px;
+  height: 16px;
+  border: 3.5px solid #fff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.vocab--tooltip .word {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #fff;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.vocab--tooltip .meaning {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.vocab--tooltip .save-btn {
+  outline: 0;
+  border: 0;
+  padding: 8px 12px;
+  font-weight: 600;
+  background-color: #4bb98e;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border-radius: 2px;
+  margin-left: auto;
+}
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

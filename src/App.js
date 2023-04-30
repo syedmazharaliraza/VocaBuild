@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import ActionButtons from "./components/ActionButtons";
+import Cards from "./components/Cards";
 
-function App() {
+import styles from "./App.module.css";
+
+export default function App() {
+  const [isHovering, setIsHovering] = useState(false);
+  const [datevalue, setDateValue] = useState(new Date());
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div
+      className={styles.container}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <ActionButtons
+        isHovering={isHovering}
+        datevalue={datevalue}
+        setDateValue={setDateValue}
+      />
+      <Cards datevalue={datevalue} />
     </div>
   );
 }
-
-export default App;

@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  transform: translateX(-150%);
+  transition: 0.2s ease-in-out;
+  z-index: 1;
+}
+
+.display {
+  transform: translateX(0);
+}
+
+.icon {
+  background-color: rgba(0, 0, 0);
+  border-radius: 50%;
+  height: 32px;
+  width: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  position: relative;
+}
+
+.icon:hover {
+  opacity: 1;
+}
+
+.datePicker {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 0;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  -webkit-box-shadow: 0px 0px 15px -4px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 15px -4px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 15px -4px rgba(0, 0, 0, 0.75);
+}
