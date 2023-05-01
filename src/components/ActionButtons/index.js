@@ -29,7 +29,7 @@ const ActionButtons = ({ isHovering, datevalue, setDateValue }) => {
         img: githubIcon,
         alt: "github icon",
         onclick: () => {
-          openNewTab();
+          openNewTab("https://github.com/syedmazharaliraza/VocaBuild");
         },
       },
     ],

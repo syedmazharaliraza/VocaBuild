@@ -4,7 +4,12 @@ import { saveMeaning, startWatchingMouseup } from "../constants/messageTypes";
 const handleSaveWord = ({ word, meaning, url }) => {
   chrome.runtime.sendMessage({
     type: saveMeaning,
-    value: { word, meaning, url, date: new Date().toLocaleString() },
+    value: {
+      word,
+      meaning,
+      url,
+      date: new Date().toLocaleString().slice(0, 8),
+    },
   });
 };
 
@@ -20,13 +25,13 @@ const handleMeaningGeneration = (word, meaning, url) => {
   saveBtn.textContent = "Save";
   saveBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    console.log("button click");
     handleSaveWord({ word, meaning, url });
+    saveBtn.textContent = "Saved!";
   });
   tooltip.appendChild(saveBtn);
 };
 
-const fetchWordMeaning = async (word) => {
+const fetchWordMeaning = async (word, GPT_API_KEY) => {
   const sModel = "text-davinci-002";
   const iMaxTokens = 2048;
   const sUserId = "1";
@@ -41,13 +46,13 @@ const fetchWordMeaning = async (word) => {
     presence_penalty: 0.0,
     stop: ["#", ";"],
   };
+
   const response = await fetch("https://api.openai.com/v1/completions", {
     method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-      Authorization:
-        "Bearer " + "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",
+      Authorization: "Bearer " + GPT_API_KEY,
     },
     body: JSON.stringify(data),
   });
@@ -94,18 +99,21 @@ const handleMouseUp = (e) => {
   const loader = document.createElement("div");
   loader.className = "loader";
   tooltip.appendChild(loader);
-  fetchWordMeaning(selectedText)
-    .then((response) => response.json())
-    .then((res) =>
-      handleMeaningGeneration(selectedText, res.choices[0].text, url)
-    )
-    .catch((error) =>
-      console.error("Error parsing API response: " + error.message)
-    );
+
+  // Fetchimg word meaning
+  chrome.storage.local.get({ GPT_API_KEY: "" }, (data) => {
+    fetchWordMeaning(selectedText, data.GPT_API_KEY)
+      .then((response) => response.json())
+      .then((res) =>
+        handleMeaningGeneration(selectedText, res.choices[0].text, url)
+      )
+      .catch((error) =>
+        console.error("Error parsing API response: " + error.message)
+      );
+  });
 
   // Removing tooltip once new word is selected
   const removeTooltip = (event) => {
-    console.log(event.target.classList, event.target.parentElement.classList);
     if (isTooltipClicked(event))
       return document.addEventListener("mousedown", removeTooltip, {
         once: true,
@@ -117,7 +125,6 @@ const handleMouseUp = (e) => {
 };
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  console.log(message);
   if (message.type === startWatchingMouseup) {
     if (message.value) {
       document.addEventListener("mouseup", handleMouseUp);

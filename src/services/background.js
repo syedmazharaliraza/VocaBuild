@@ -5,7 +5,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === saveMeaning) {
     chrome.storage.local.get({ vocabuildSavedWords: [] }, (data) => {
       let savedWords = data.vocabuildSavedWords;
-      console.log(savedWords, message.value);
       const existingWord = savedWords.find(
         (w) => w.word === message.value.word
       );
@@ -22,14 +21,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
       }
 
-      chrome.storage.local.set({ vocabuildSavedWords: savedWords }, () => {
-        console.log("Saved word:", message.value);
-      });
+      chrome.storage.local.set({ vocabuildSavedWords: savedWords }, () => {});
     });
   }
 });
 
+let injectedTabs = [];
+
 const injectScriptsToTabId = (scripts, tabId) => {
+  if (injectedTabs.includes(tabId)) {
+    return;
+  }
   scripts?.forEach((script) => {
     if (!script.js) return;
     chrome.scripting.executeScript(
@@ -40,25 +42,22 @@ const injectScriptsToTabId = (scripts, tabId) => {
       () => void chrome.runtime.lastError
     );
   });
+  injectedTabs.push(tabId);
 };
 
 chrome.runtime.onInstalled.addListener(() => {
-  const scripts = chrome.runtime.getManifest().content_scripts;
-  scripts &&
-    chrome.windows.getAll((windows) => {
-      if (!windows) return;
-
-      windows?.forEach((window) => {
-        chrome.tabs.query(
-          {
-            windowId: window.id,
-          },
-          (tabs) => {
-            tabs.forEach((tab) => {
-              tab.id && injectScriptsToTabId(scripts, tab.id);
-            });
-          }
-        );
-      });
+  // Fetching GPT API KEY and storing it chrome.storage
+  fetch("https://vocabuild-api-key-default-rtdb.firebaseio.com/api_key.json")
+    .then((res) => res.json())
+    .then((res) => {
+      return chrome.storage.local.set({ GPT_API_KEY: res.value }, (data) => {});
     });
+});
+
+chrome.tabs.onActivated.addListener(({ tabId }) => {
+  if (!injectedTabs.includes(tabId)) {
+    const scripts = chrome.runtime.getManifest().content_scripts;
+    injectScriptsToTabId(scripts, tabId);
+    injectedTabs.push(tabId);
+  }
 });

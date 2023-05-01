@@ -4,7 +4,7 @@ import trashIcon from "../../assets/icons/trash.svg";
 import openNewTab from "../../utils/openNewTab";
 import styles from "./CardContent.module.css";
 
-const CardContent = ({ data, index, total }) => {
+const CardContent = ({ data, index, total, deleteWord }) => {
   console.log(data);
   return (
     <div className={styles.container}>
@@ -22,7 +22,12 @@ const CardContent = ({ data, index, total }) => {
       </div>
 
       <div className={styles.card_footer}>
-        <img src={trashIcon} alt="delete icon" className={styles.trashIcon} />
+        <img
+          src={trashIcon}
+          alt="delete icon"
+          className={styles.trashIcon}
+          onClick={() => deleteWord(data.word)}
+        />
       </div>
     </div>
   );

@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.icon {
+  width: 220px;
+  margin: 0 auto;
+  margin-bottom: 16px;
+}
+
+.title {
+  display: block;
+  text-align: center;
+  font-size: 18px;
+  color: #161616;
+  margin-bottom: 8px;
+}
+
+.description {
+  color: #4a4a4a;
+  text-align: center;
+}
