@@ -31,31 +31,13 @@ const handleMeaningGeneration = (word, meaning, url) => {
   tooltip.appendChild(saveBtn);
 };
 
-const fetchWordMeaning = async (word, GPT_API_KEY) => {
-  const sModel = "text-davinci-002";
-  const iMaxTokens = 2048;
-  const sUserId = "1";
-  const dTemperature = 0.5;
-  const data = {
-    model: sModel,
-    prompt: `What is the meaning of the word "${word}"? Give response in under 20 words.`,
-    max_tokens: iMaxTokens,
-    user: sUserId,
-    temperature: dTemperature,
-    frequency_penalty: 0.0,
-    presence_penalty: 0.0,
-    stop: ["#", ";"],
-  };
-
-  const response = await fetch("https://api.openai.com/v1/completions", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + GPT_API_KEY,
-    },
-    body: JSON.stringify(data),
-  });
+const fetchWordMeaning = async (word, API_KEY) => {
+  const response = await fetch(
+    `https://www.dictionaryapi.com/api/v3/references/collegiate/json/${word}?key=${API_KEY}`,
+    {
+      method: "GET",
+    }
+  );
   return response;
 };
 
@@ -101,12 +83,18 @@ const handleMouseUp = (e) => {
   tooltip.appendChild(loader);
 
   // Fetchimg word meaning
-  chrome.storage.local.get({ GPT_API_KEY: "" }, (data) => {
-    fetchWordMeaning(selectedText, data.GPT_API_KEY)
+  chrome.storage.local.get({ API_KEY: "" }, (data) => {
+    fetchWordMeaning(selectedText, data.API_KEY)
       .then((response) => response.json())
-      .then((res) =>
-        handleMeaningGeneration(selectedText, res.choices[0].text, url)
-      )
+      .then((res) => {
+        console.log(res + "-90");
+        console.log(res[0]["def"][0]["sseq"][0][0][1]["dt"][0][1] + "-91");
+        return handleMeaningGeneration(
+          selectedText,
+          res[0]["def"][0]["sseq"][0][0][1]["dt"][0][1].replace(/\{.*?\}/g, ""),
+          url
+        );
+      })
       .catch((error) =>
         console.error("Error parsing API response: " + error.message)
       );

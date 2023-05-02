@@ -46,11 +46,11 @@ const injectScriptsToTabId = (scripts, tabId) => {
 };
 
 chrome.runtime.onInstalled.addListener(() => {
-  // Fetching GPT API KEY and storing it chrome.storage
+  // Fetching API KEY and storing it chrome.storage
   fetch("https://vocabuild-api-key-default-rtdb.firebaseio.com/api_key.json")
     .then((res) => res.json())
     .then((res) => {
-      return chrome.storage.local.set({ GPT_API_KEY: res.value }, (data) => {});
+      return chrome.storage.local.set({ API_KEY: res.value }, (data) => {});
     });
 });
 
