@@ -1,4 +1,4 @@
-[GPT API might not be working because of too many requests at a time - 2nd May 11.42 am]
+[Due to GPT API's expiration, it has been replaced with Dictionary API]
 
 # VocaBuild - Your Personalized Word Companion
 
