@@ -20,7 +20,6 @@ const ActionButtons = ({ isHovering, datevalue, setDateValue }) => {
         img: calendarIcon,
         alt: "calender icon",
         onclick: function () {
-          console.log("hi");
           setShowDatePicker((preVal) => !preVal);
         },
       },

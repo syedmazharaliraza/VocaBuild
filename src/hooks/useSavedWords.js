@@ -6,12 +6,9 @@ const useSavedWords = (date) => {
 
   const deleteWord = (word) => {
     chrome.storage.local.get({ vocabuildSavedWords: [] }, (data) => {
-      console.log(data + "-9");
-      console.log(word + "-10");
       const filteredWords = data.vocabuildSavedWords.filter(
         (w) => w.word !== word
       );
-      console.log(filteredWords + "-12");
       chrome.storage.local.set({ vocabuildSavedWords: filteredWords });
       setSavedWords(filteredWords);
     });

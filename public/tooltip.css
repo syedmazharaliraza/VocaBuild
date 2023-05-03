@@ -1,6 +1,8 @@
-.vocab--tooltip {
+.vocab--root {
   position: absolute;
   z-index: 1000;
+}
+.vocab--tooltip {
   background-color: #409e7b;
   border-radius: 4px;
   padding: 12px;
@@ -33,13 +35,14 @@
   font-weight: 500;
   line-height: 24px;
   color: #fff;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .vocab--tooltip .save-btn {
   outline: 0;
   border: 0;
-  padding: 8px 12px;
+  padding: 8px 16px;
+  font-size: 14px;
   font-weight: 600;
   background-color: #4bb98e;
   display: grid;
@@ -48,6 +51,7 @@
   border-radius: 2px;
   margin-left: auto;
 }
+
 @keyframes rotation {
   0% {
     transform: rotate(0deg);

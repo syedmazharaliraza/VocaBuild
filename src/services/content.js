@@ -1,44 +1,78 @@
 /* global chrome */
+import React, { useState, useEffect, useMemo } from "react";
+import ReactDOM from "react-dom/client";
 import { saveMeaning, startWatchingMouseup } from "../constants/messageTypes";
 
-const handleSaveWord = ({ word, meaning, url }) => {
-  chrome.runtime.sendMessage({
-    type: saveMeaning,
-    value: {
-      word,
-      meaning,
-      url,
-      date: new Date().toLocaleString().slice(0, 8),
-    },
-  });
-};
+const WordTooltip = ({ word, url }) => {
+  const [loading, setLoading] = useState(true);
+  const [meaning, setMeaning] = useState("");
+  const [isWordSaved, setIsWordSaved] = useState(false);
+  const [error, setError] = useState("");
 
-const handleMeaningGeneration = (word, meaning, url) => {
-  const tooltip = document.querySelector(".vocab--tooltip");
-  tooltip.removeChild(document.querySelector(".vocab--tooltip .loader"));
-  const meaningElement = document.createElement("p");
-  meaningElement.classList.add("meaning");
-  meaningElement.textContent = meaning;
-  tooltip.appendChild(meaningElement);
-  const saveBtn = document.createElement("button");
-  saveBtn.classList.add("save-btn");
-  saveBtn.textContent = "Save";
-  saveBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    handleSaveWord({ word, meaning, url });
-    saveBtn.textContent = "Saved!";
-  });
-  tooltip.appendChild(saveBtn);
-};
+  const handleSaveWord = () => {
+    chrome.runtime.sendMessage({
+      type: saveMeaning,
+      value: {
+        word,
+        meaning,
+        url,
+        date: new Date().toLocaleString().slice(0, 8),
+      },
+    });
+    setIsWordSaved(true);
+  };
 
-const fetchWordMeaning = async (word, API_KEY) => {
-  const response = await fetch(
-    `https://www.dictionaryapi.com/api/v3/references/collegiate/json/${word}?key=${API_KEY}`,
-    {
-      method: "GET",
-    }
+  const fetchWordMeaning = useMemo(() => {
+    const cache = {};
+    return async (word) => {
+      if (cache[word]) {
+        return cache[word];
+      }
+      const response = await fetch(
+        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
+      );
+      const resJson = await response.json();
+      if (resJson.message) {
+        return setError(resJson.message);
+      }
+      const result = resJson[0].meanings[0].definitions[0].definition;
+      cache[word] = result;
+      return result;
+    };
+  }, []);
+
+  useEffect(() => {
+    setError("");
+    setMeaning("");
+    setIsWordSaved(false);
+    fetchWordMeaning(word)
+      .then((result) => {
+        setMeaning(result);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Error parsing API response: " + error.message);
+      });
+  }, [word, fetchWordMeaning]);
+
+  return (
+    <div className="vocab--tooltip">
+      <span className="word">{word}</span>
+      {loading ? (
+        <div className="loader"></div>
+      ) : (
+        <>
+          <p className="meaning">{error ? error : meaning}</p>
+          {!error && (
+            <button className="save-btn" onClick={handleSaveWord}>
+              {`${isWordSaved ? "Saved!" : "Save"}`}
+            </button>
+          )}
+        </>
+      )}
+    </div>
   );
-  return response;
 };
 
 const isTooltipClicked = (e) =>
@@ -52,19 +86,16 @@ function capitalize(word) {
 
 const handleMouseUp = (e) => {
   if (isTooltipClicked(e)) return;
+
   const selectedText = capitalize(window.getSelection().toString().trim());
   if (selectedText.length <= 1 || selectedText.split(/\s+/).length > 1) return;
-  let element = e.target;
-  let id = element.id;
-  while (!id && element.parentNode) {
-    element = element.parentNode;
-    id = element.id;
-  }
+
   const baseUrl = window.location.href.split("#")[0];
-  const url = id ? `${baseUrl}#${id}` : baseUrl;
+  const url = e.target.id ? `${baseUrl}#${e.target.id}` : baseUrl;
+
   const range = window.getSelection().getRangeAt(0);
   const tooltip = document.createElement("div");
-  tooltip.classList.add("vocab--tooltip");
+  tooltip.classList.add("vocab--root");
   tooltip.style.top = `${
     range.getBoundingClientRect().top + window.scrollY - tooltip.offsetHeight
   }px`;
@@ -73,32 +104,11 @@ const handleMouseUp = (e) => {
     range.getBoundingClientRect().width / 2 -
     tooltip.offsetWidth / 2
   }px`;
-  document.body.appendChild(tooltip);
-  const wordSpan = document.createElement("span");
-  wordSpan.classList.add("word");
-  wordSpan.textContent = selectedText;
-  tooltip.appendChild(wordSpan);
-  const loader = document.createElement("div");
-  loader.className = "loader";
-  tooltip.appendChild(loader);
 
-  // Fetchimg word meaning
-  chrome.storage.local.get({ API_KEY: "" }, (data) => {
-    fetchWordMeaning(selectedText, data.API_KEY)
-      .then((response) => response.json())
-      .then((res) => {
-        console.log(res + "-90");
-        console.log(res[0]["def"][0]["sseq"][0][0][1]["dt"][0][1] + "-91");
-        return handleMeaningGeneration(
-          selectedText,
-          res[0]["def"][0]["sseq"][0][0][1]["dt"][0][1].replace(/\{.*?\}/g, ""),
-          url
-        );
-      })
-      .catch((error) =>
-        console.error("Error parsing API response: " + error.message)
-      );
-  });
+  document.body.appendChild(tooltip);
+
+  const root = ReactDOM.createRoot(tooltip);
+  root.render(<WordTooltip word={selectedText} url={url} />);
 
   // Removing tooltip once new word is selected
   const removeTooltip = (event) => {

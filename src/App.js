@@ -7,7 +7,6 @@ import styles from "./App.module.css";
 export default function App() {
   const [isHovering, setIsHovering] = useState(false);
   const [datevalue, setDateValue] = useState(new Date());
-  console.log(datevalue);
   const handleMouseEnter = () => {
     setIsHovering(true);
   };

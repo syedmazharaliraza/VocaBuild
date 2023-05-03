@@ -45,15 +45,6 @@ const injectScriptsToTabId = (scripts, tabId) => {
   injectedTabs.push(tabId);
 };
 
-chrome.runtime.onInstalled.addListener(() => {
-  // Fetching API KEY and storing it chrome.storage
-  fetch("https://vocabuild-api-key-default-rtdb.firebaseio.com/api_key.json")
-    .then((res) => res.json())
-    .then((res) => {
-      return chrome.storage.local.set({ API_KEY: res.value }, (data) => {});
-    });
-});
-
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   if (!injectedTabs.includes(tabId)) {
     const scripts = chrome.runtime.getManifest().content_scripts;

@@ -5,7 +5,6 @@ import openNewTab from "../../utils/openNewTab";
 import styles from "./CardContent.module.css";
 
 const CardContent = ({ data, index, total, deleteWord }) => {
-  console.log(data);
   return (
     <div className={styles.container}>
       <div className={styles.card_header}>
