@@ -5,17 +5,21 @@ import { saveMeaning, startWatchingMouseup } from "../constants/messageTypes";
 
 const WordTooltip = ({ word, url }) => {
   const [loading, setLoading] = useState(true);
-  const [meaning, setMeaning] = useState("");
+  const [wordData, setWordData] = useState({
+    result: "",
+    audio: "",
+    error: false,
+  });
   const [isWordSaved, setIsWordSaved] = useState(false);
-  const [error, setError] = useState("");
 
   const handleSaveWord = () => {
     chrome.runtime.sendMessage({
       type: saveMeaning,
       value: {
         word,
-        meaning,
         url,
+        meaning: wordData.result,
+        audio: wordData.audio,
         date: new Date().toLocaleString().slice(0, 8),
       },
     });
@@ -33,21 +37,30 @@ const WordTooltip = ({ word, url }) => {
       );
       const resJson = await response.json();
       if (resJson.message) {
-        return setError(resJson.message);
+        return { result: resJson.message, error: true };
       }
-      const result = resJson[0].meanings[0].definitions[0].definition;
-      cache[word] = result;
-      return result;
+      const data = {
+        result: resJson[0].meanings[0].definitions[0].definition,
+        audio: resJson[0].phonetics[0].audio,
+      };
+      cache[word] = data.result;
+      return data;
     };
   }, []);
 
   useEffect(() => {
-    setError("");
-    setMeaning("");
+    setWordData({
+      result: "",
+      audio: "",
+      error: false,
+    });
     setIsWordSaved(false);
     fetchWordMeaning(word)
-      .then((result) => {
-        setMeaning(result);
+      .then((res) => {
+        setWordData((preVal) => ({
+          ...preVal,
+          ...res,
+        }));
         setLoading(false);
       })
       .catch((error) => {
@@ -63,8 +76,8 @@ const WordTooltip = ({ word, url }) => {
         <div className="loader"></div>
       ) : (
         <>
-          <p className="meaning">{error ? error : meaning}</p>
-          {!error && (
+          <p className="meaning">{wordData.result}</p>
+          {!wordData.error && (
             <button className="save-btn" onClick={handleSaveWord}>
               {`${isWordSaved ? "Saved!" : "Save"}`}
             </button>

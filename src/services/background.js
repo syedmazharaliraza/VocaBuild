@@ -12,11 +12,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         existingWord.meaning = message.value.meaning;
         existingWord.date = message.value.date;
         existingWord.url = message.value.url;
+        existingWord.audio = message.value.audio;
       } else {
         savedWords.push({
           word: message.value.word,
           meaning: message.value.meaning,
           date: message.value.date,
+          audio: message.value.audio,
           url: message.value.url,
         });
       }

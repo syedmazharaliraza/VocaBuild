@@ -5,10 +5,22 @@ import openNewTab from "../../utils/openNewTab";
 import styles from "./CardContent.module.css";
 
 const CardContent = ({ data, index, total, deleteWord }) => {
+  function playAudio() {
+    const pronunciation = new Audio(data.audio);
+    pronunciation.pause();
+    pronunciation.currentTime = 0;
+    pronunciation.play();
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.card_header}>
-        <img src={soundIcon} alt="sound icon" className={styles.soundIcon} />
+        <img
+          src={soundIcon}
+          alt="sound icon"
+          className={styles.soundIcon}
+          onClick={playAudio}
+        />
         <span className={styles.card_index}>{`(${index + 1}/${total})`}</span>
       </div>
       <div className={styles.card_body}>
