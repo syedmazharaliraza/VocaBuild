@@ -19,7 +19,7 @@ const WordTooltip = ({ word, url }) => {
         word,
         url,
         meaning: wordData.result,
-        audio: wordData.audio,
+        audio: wordData?.audio,
         date: new Date().toLocaleString().slice(0, 8),
       },
     });
@@ -36,12 +36,12 @@ const WordTooltip = ({ word, url }) => {
         `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
       );
       const resJson = await response.json();
-      if (resJson.message) {
-        return { result: resJson.message, error: true };
+      if (resJson?.message) {
+        return { result: resJson?.message, error: true };
       }
       const data = {
-        result: resJson[0].meanings[0].definitions[0].definition,
-        audio: resJson[0].phonetics[0].audio,
+        result: resJson[0]?.meanings[0]?.definitions[0]?.definition,
+        audio: resJson[0]?.phonetics[0]?.audio,
       };
       cache[word] = data.result;
       return data;
@@ -101,7 +101,8 @@ const handleMouseUp = (e) => {
   if (isTooltipClicked(e)) return;
 
   const selectedText = capitalize(window.getSelection().toString().trim());
-  if (selectedText.length <= 1 || selectedText.split(/\s+/).length > 1) return;
+  if (selectedText?.length <= 1 || selectedText.split(/\s+/)?.length > 1)
+    return;
 
   const baseUrl = window.location.href.split("#")[0];
   const url = e.target.id ? `${baseUrl}#${e.target.id}` : baseUrl;
