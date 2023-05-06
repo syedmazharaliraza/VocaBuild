@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Switch, Tooltip } from "@mantine/core";
 import logo from "../../assets/images/logo.png";
 import githubIcon from "../../assets/icons/github.svg";

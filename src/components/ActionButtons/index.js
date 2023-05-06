@@ -9,6 +9,7 @@ const ActionButtons = ({
   dateValue,
   setDateValue,
   selectedWords,
+  setSelectedWords,
   deleteWord,
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -31,7 +32,10 @@ const ActionButtons = ({
             src={deleteIcon}
             alt="delete icon"
             style={{ opacity: selectedWords.length > 0 ? 1 : 0.6 }}
-            onClick={() => deleteWord(selectedWords)}
+            onClick={() => {
+              deleteWord(selectedWords);
+              setSelectedWords([]);
+            }}
           />
         </button>
       </Tooltip>

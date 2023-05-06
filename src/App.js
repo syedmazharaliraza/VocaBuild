@@ -23,6 +23,7 @@ export default function App() {
         setDateValue={setDateValue}
         selectedWords={selectedWords}
         deleteWord={deleteWord}
+        setSelectedWords={setSelectedWords}
       />
     </div>
   );
