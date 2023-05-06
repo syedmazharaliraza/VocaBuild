@@ -1,5 +1,3 @@
-[Due to GPT API's expiration, it has been replaced with Dictionary API]
-
 # VocaBuild - Your Personalized Word Companion
 
 VocaBuild is a Google Chrome extension built using ReactJS that allows you to select any word on any web page and view its meaning in a tooltip. You can also save any word for future reference and view your saved words within the extension.
@@ -12,7 +10,9 @@ VocaBuild is a Google Chrome extension built using ReactJS that allows you to se
 4. A tooltip will appear showing the meaning of the selected word.
 5. You can save any word by clicking the save button within the tooltip.
 6. To view your saved words, click on the extension icon in the top right corner of the browser.
-7. You can delete any saved word by clicking the delete button at the bottom of each card.
+7. To delete a saved word, check the box next to the word in the extension, then click the delete button at the bottom.
+
+https://user-images.githubusercontent.com/77449219/236636507-0f500969-f024-46ad-adf5-07da086a7b7d.mp4
 
 ## Installation
 
