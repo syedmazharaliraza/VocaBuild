@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import ReactDOM from "react-dom/client";
 import { saveMeaning, startWatchingMouseup } from "../constants/messageTypes";
+import { nanoid } from "nanoid";
 
 const WordTooltip = ({ word, url }) => {
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,8 @@ const WordTooltip = ({ word, url }) => {
         url,
         meaning: wordData.result,
         audio: wordData?.audio,
-        date: new Date().toLocaleString().slice(0, 8),
+        date: new Date().toLocaleDateString(),
+        id: nanoid(),
       },
     });
     setIsWordSaved(true);
@@ -126,22 +128,32 @@ const handleMouseUp = (e) => {
 
   // Removing tooltip once new word is selected
   const removeTooltip = (event) => {
-    if (isTooltipClicked(event))
+    if (isTooltipClicked(event)) {
       return document.addEventListener("mousedown", removeTooltip, {
         once: true,
       });
-    document.addEventListener("mouseup", handleMouseUp);
+    }
+    chrome.storage.local.get({ extension_active: true }, (data) => {
+      if (data.extension_active) {
+        document.addEventListener("mouseup", handleMouseUp);
+      }
+    });
     tooltip.remove();
   };
   document.addEventListener("mousedown", removeTooltip, { once: true });
 };
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.type === startWatchingMouseup) {
-    if (message.value) {
-      document.addEventListener("mouseup", handleMouseUp);
-    } else {
-      document.removeEventListener("mouseup", handleMouseUp);
-    }
+function handleStorageChange(changes) {
+  if (changes.extension_active && changes.extension_active.newValue) {
+    document.addEventListener("mouseup", handleMouseUp);
+  } else {
+    document.removeEventListener("mouseup", handleMouseUp);
+  }
+}
+
+chrome.storage.onChanged.addListener(handleStorageChange);
+chrome.storage.local.get({ extension_active: true }, (data) => {
+  if (data.extension_active) {
+    document.addEventListener("mouseup", handleMouseUp);
   }
 });

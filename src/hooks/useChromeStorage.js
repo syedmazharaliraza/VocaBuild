@@ -6,7 +6,7 @@ const useChromeStorage = (key, initialValue) => {
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
-    chrome.storage.sync.get(key, ({ [key]: storedValue }) => {
+    chrome?.storage?.local.get(key, ({ [key]: storedValue }) => {
       if (storedValue !== undefined) {
         setValue(storedValue);
       }
@@ -14,7 +14,7 @@ const useChromeStorage = (key, initialValue) => {
   }, [key]);
 
   const setChromeStorageValue = (newValue) => {
-    chrome.storage.sync.set({ [key]: newValue });
+    chrome?.storage?.local.set({ [key]: newValue });
     setValue(newValue);
   };
 

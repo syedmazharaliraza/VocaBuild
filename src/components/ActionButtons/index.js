@@ -1,52 +1,22 @@
+import deleteIcon from "../../assets/icons/trash.svg";
 import calendarIcon from "../../assets/icons/calendar.svg";
-import githubIcon from "../../assets/icons/github.svg";
-import { Switch, Tooltip } from "@mantine/core";
-import { DatePicker } from "@mantine/dates";
-import { useEffect, useMemo, useState } from "react";
-import { startWatchingMouseup } from "../../constants/messageTypes";
-import { sendMessageToScript } from "../../utils/messageSender";
-import useChromeStorage from "../../hooks/useChromeStorage";
-import openNewTab from "../../utils/openNewTab";
 import styles from "./index.module.css";
+import { Tooltip } from "@mantine/core";
+import { useState } from "react";
+import { DatePicker } from "@mantine/dates";
 
-const ActionButtons = ({ isHovering, datevalue, setDateValue }) => {
+const ActionButtons = ({
+  dateValue,
+  setDateValue,
+  selectedWords,
+  deleteWord,
+}) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [checked, setChecked] = useChromeStorage("extension_active", false);
-
-  const icons = useMemo(
-    () => [
-      {
-        label: "Select date",
-        img: calendarIcon,
-        alt: "calender icon",
-        onclick: function () {
-          setShowDatePicker((preVal) => !preVal);
-        },
-      },
-      {
-        label: "Contribute",
-        img: githubIcon,
-        alt: "github icon",
-        onclick: () => {
-          openNewTab("https://github.com/syedmazharaliraza/VocaBuild");
-        },
-      },
-    ],
-    []
-  );
-
-  useEffect(() => {
-    sendMessageToScript({
-      type: startWatchingMouseup,
-      value: checked,
-    });
-  }, [checked]);
-
   return (
-    <div className={`${styles.container} ${isHovering && styles.display}`}>
-      {showDatePicker && isHovering && (
+    <div className={styles.container}>
+      {showDatePicker && (
         <DatePicker
-          value={datevalue}
+          value={dateValue}
           onChange={(value) => {
             setDateValue(value);
             setShowDatePicker(false);
@@ -55,27 +25,25 @@ const ActionButtons = ({ isHovering, datevalue, setDateValue }) => {
           maxDate={new Date()}
         />
       )}
-      <Tooltip
-        label={`Turn ${checked ? "off" : "on"} VocaBuild`}
-        position="right"
-        withArrow
-      >
-        <div>
-          <Switch
-            size="xs"
-            checked={checked}
-            onChange={(event) => setChecked(event.currentTarget.checked)}
+      <Tooltip label="Delete words" position="top" withArrow>
+        <button disabled={selectedWords.length === 0}>
+          <img
+            src={deleteIcon}
+            alt="delete icon"
+            style={{ opacity: selectedWords.length > 0 ? 1 : 0.6 }}
+            onClick={() => deleteWord(selectedWords)}
           />
-        </div>
+        </button>
       </Tooltip>
-
-      {icons.map((icon) => (
-        <Tooltip label={icon.label} position="right" withArrow>
-          <div className={styles.icon} onClick={icon.onclick}>
-            <img src={icon.img} alt={icon.alt} />
-          </div>
-        </Tooltip>
-      ))}
+      <Tooltip label="Change date" position="top" withArrow>
+        <button
+          onClick={function () {
+            setShowDatePicker((preVal) => !preVal);
+          }}
+        >
+          <img src={calendarIcon} alt="calendar icon" />
+        </button>
+      </Tooltip>
     </div>
   );
 };

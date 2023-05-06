@@ -1,31 +1,29 @@
 import { useState } from "react";
-import ActionButtons from "./components/ActionButtons";
-import Cards from "./components/Cards";
-
 import styles from "./App.module.css";
+import Topbar from "./components/Topbar";
+import ContentList from "./components/ContentList";
+import ActionButtons from "./components/ActionButtons";
+import useSavedWords from "./hooks/useSavedWords";
 
 export default function App() {
-  const [isHovering, setIsHovering] = useState(false);
-  const [datevalue, setDateValue] = useState(new Date());
-  const handleMouseEnter = () => {
-    setIsHovering(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovering(false);
-  };
+  const [dateValue, setDateValue] = useState(new Date());
+  const [selectedWords, setSelectedWords] = useState([]);
+  const { savedWords, deleteWord } = useSavedWords(dateValue);
   return (
-    <div
-      className={styles.container}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <ActionButtons
-        isHovering={isHovering}
-        datevalue={datevalue}
-        setDateValue={setDateValue}
+    <div className={styles.container}>
+      <Topbar />
+      <ContentList
+        dateValue={dateValue}
+        savedWords={savedWords}
+        selectedWords={selectedWords}
+        setSelectedWords={setSelectedWords}
       />
-      <Cards datevalue={datevalue} />
+      <ActionButtons
+        dateValue={dateValue}
+        setDateValue={setDateValue}
+        selectedWords={selectedWords}
+        deleteWord={deleteWord}
+      />
     </div>
   );
 }
